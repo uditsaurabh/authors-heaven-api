@@ -18,8 +18,9 @@ services:
             - .:/app:z
             - static_volume:/app/staticfiles
             - media_volume:/app/mediafiles
-        ports:
-            - "8000:8000"
+        #ports:
+        #    - "8000:8000"
+        # expose it to the internal system
         expose:
             - "8000"
         env_file:
@@ -27,7 +28,7 @@ services:
             - ./.envs/.local/.postgres
         depends_on:
             - postgres
-  #         - mailhog
+            - mailhog
   #          - redis
   #          - es
         networks:
@@ -45,13 +46,13 @@ services:
         networks:
             - authors-api
 
-#    mailhog:
-#        image: mailhog/mailhog:v1.0.0
-#        container_name: mailhog
-#        ports:
-#            - "8025:8025"
-#        networks:
-#            - authors-api
+    mailhog:
+        image: mailhog/mailhog:v1.0.0
+        container_name: mailhog
+        ports:
+            - "8025:8025"
+        networks:
+            - authors-api
 
 #    redis:
 #        image: redis:7-alpine
@@ -93,20 +94,20 @@ services:
 #        networks:
 #            - authors-api
 
-#    nginx:
-#        restart: always
-#        depends_on:
-#            - api
-#        volumes:
-#            - static_volume:/app/staticfiles
-#            - media_volume:/app/mediafiles
-#        build:
-#            context: ./docker/local/nginx
-#            dockerfile: Dockerfile
-#        ports:
-#            - "8080:80"
-#        networks:
-#            - authors-api
+    nginx:
+        restart: always
+        depends_on:
+            - api
+        volumes:
+            - static_volume:/app/staticfiles
+            - media_volume:/app/mediafiles
+        build:
+            context: ./docker/local/nginx
+            dockerfile: Dockerfile
+        ports:
+            - "8080:80"
+        networks:
+             - authors-api
 
 networks:
     authors-api:
