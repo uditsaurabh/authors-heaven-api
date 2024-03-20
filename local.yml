@@ -1,14 +1,14 @@
 version: "3.9"
 
 services:
-#    es:
-#        image: elasticsearch:7.17.9
-#        environment:
-#            - discovery.type=single-node
-#        ports:
-#            - "9200:9200"
-#        networks:
-#            - authors-api
+    es:
+        image: elasticsearch:7.17.9
+        environment:
+            - discovery.type=single-node
+        ports:
+            - "9200:9200"
+        networks:
+            - authors-api
     api:
         build:
             context: .
@@ -18,6 +18,7 @@ services:
             - .:/app:z
             - static_volume:/app/staticfiles
             - media_volume:/app/mediafiles
+        #commented port as its now not directly exposed rather exposed via nginx
         #ports:
         #    - "8000:8000"
         # expose it to the internal system
@@ -29,7 +30,7 @@ services:
         depends_on:
             - postgres
             - mailhog
-  #          - redis
+            - redis
   #          - es
         networks:
             - authors-api
@@ -54,45 +55,45 @@ services:
         networks:
             - authors-api
 
-#    redis:
-#        image: redis:7-alpine
-#        networks:
-#            - authors-api
+    redis:
+        image: redis:7-alpine
+        networks:
+            - authors-api
 
-#    celery_worker:
-#        build:
-#            context: .
-#            dockerfile: ./docker/local/django/Dockerfile
-#        command: /start-celeryworker
-#        volumes:
-#            - .:/app
-#        env_file:
-#            - ./.envs/.local/.django
-#            - ./.envs/.local/.postgres
-#        depends_on:
-#            - redis
-#            - postgres
-#            - mailhog
-#        networks:
-#            - authors-api
+    celery_worker:
+        build:
+            context: .
+            dockerfile: ./docker/local/django/Dockerfile
+        command: /start-celeryworker
+        volumes:
+            - .:/app
+        env_file:
+            - ./.envs/.local/.django
+            - ./.envs/.local/.postgres
+        depends_on:
+            - redis
+            - postgres
+            - mailhog
+        networks:
+            - authors-api
 
-#    flower:
-#        build:
-#            context: .
-#            dockerfile: ./docker/local/django/Dockerfile
-#        command: /start-flower
-#        volumes:
-#            - flower_data:/data
-#        env_file:
-#            - ./.envs/.local/.django
-#            - ./.envs/.local/.postgres
-#        ports:
-#            - "5555:5555"
-#        depends_on:
-#            - redis
-#            - postgres
-#        networks:
-#            - authors-api
+    flower:
+        build:
+            context: .
+            dockerfile: ./docker/local/django/Dockerfile
+        command: /start-flower
+        volumes:
+            - flower_data:/data
+        env_file:
+            - ./.envs/.local/.django
+            - ./.envs/.local/.postgres
+        ports:
+            - "5555:5555"
+        depends_on:
+            - redis
+            - postgres
+        networks:
+            - authors-api
 
     nginx:
         restart: always
@@ -118,4 +119,4 @@ volumes:
     media_volume:
     local_postgres_data: {}
     local_postgres_data_backups: {}
- #   flower_data: {}
+    flower_data: {}
